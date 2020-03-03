@@ -2,8 +2,6 @@ package com.capgemini.librarymanagement.controller;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.capgemini.librarymanagement.LibraryMainPage;
 import com.capgemini.librarymanagement.db.DbStore1;
@@ -20,6 +18,7 @@ import com.capgemini.librarymanagement.validation.LibraryManageValidation;
 public class LibraryManagementController {
 
 	private static final Object userPassword = null;
+	public static int count = 0;
 	Scanner scanner = new Scanner(System.in);
 	AdminBookService adminBookService = new AdminBookServiceImpl();
 	UserService userService = new UserServiceImpl();
@@ -75,12 +74,6 @@ public class LibraryManagementController {
 					if (adminBookService.addBook(bookInfo)) {
 						System.out.println("Books added successfully with " + bookNum + "copy");
 					}
-					// } else {
-					// try {
-					// throw new BookGenericException("Book Details Invalid");
-					// } catch(BookGenericException e) {
-					// System.err.println(e.getMessage());
-					// }
 				}
 
 				break;
@@ -98,45 +91,33 @@ public class LibraryManagementController {
 				String usrPassword = scanner.next().trim();
 
 				UserInfoBean userInfoBean = new UserInfoBean();
-				userInfoBean.setUsrId(usrId);
-				userInfoBean.setUsrName(usrName);
-				userInfoBean.setUsrEmail(usrEmail);
-				userInfoBean.setUsrPassword(usrPassword);
-
 				LibraryManageValidation userValidation = new LibraryManageValidation();
-				System.out.println("uservalidation");
-				
-				if(DbStore1.userInfoBean == null) {
-					
-						if (userValidation.userValidation(usrId, usrName, usrEmail, usrPassword)) {
-
-						if (adminBookService.addUser(userInfoBean)) {
-							System.out.println("Successfully Added the User");
-						} else {
-							System.out.println("Adding user failed!!! ");
-						}
-					
-				}
-				}else {
-					for (UserInfoBean user : DbStore1.userInfoBean) {
-						if (user.getUsrEmail().equals(usrEmail)) {
-							System.out.println("not added");
-						}else {
-							if (userValidation.userValidation(usrId, usrName, usrEmail, usrPassword)) {
-
-								if (adminBookService.addUser(userInfoBean)) {
-									System.out.println("Successfully Added the User");
-								} else {
-									System.out.println("Adding user failed!!! ");
-								}
-						}
-						}
+				 
+				for ( UserInfoBean users: DbStore1.userInfoBean) {
+					if (users.getUsrEmail().equalsIgnoreCase(usrEmail) || users.getUsrId().equalsIgnoreCase(usrId) ) {
+						count++;
 					}
 					
-							
-
 				}
-						
+				if (count==0) {
+					count=0;
+					userInfoBean.setUsrId(usrId);
+					userInfoBean.setUsrName(usrName);
+					userInfoBean.setUsrEmail(usrEmail);
+					userInfoBean.setUsrPassword(usrPassword);
+					if (userValidation.userValidation(usrId, usrName, usrEmail, usrPassword)) {
+						if (adminBookService.addUser(userInfoBean)) {
+							System.out.println("added Successfully");
+						} else {
+							System.err.println("user  not added");
+						}
+
+					}
+				}else {
+					System.out.println("user is already Exist");
+				}
+				
+
 
 				break;
 			case 3:
@@ -202,8 +183,8 @@ public class LibraryManagementController {
 				if (!list.isEmpty()) {
 					for (BookInfo books : list) {
 						System.out.println("Book Id=" + books.getBookId() + "\t Book Name = " + books.getBookName()
-								+ " \t Book Author = " + books.getBookAuthor() + "\t Number of book copies"
-								+ books.getNoOfBooks() + "\t Publisher Name=" + books.getPublisher());
+						+ " \t Book Author = " + books.getBookAuthor() + "\t Number of book copies"
+						+ books.getNoOfBooks() + "\t Publisher Name=" + books.getPublisher());
 					}
 				} else {
 					System.err.println("No books to show");

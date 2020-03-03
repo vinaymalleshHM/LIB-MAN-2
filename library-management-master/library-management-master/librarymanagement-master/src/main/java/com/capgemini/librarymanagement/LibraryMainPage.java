@@ -33,7 +33,7 @@ public class LibraryMainPage {
 					String adminName = scanner.next();
 					System.out.println("Enter Password \n");
 					String adminPassword = scanner.next();
-					if (adminName.equals("admin") && adminPassword.equals("admin@123")) {
+					if (adminName.equals("a") && adminPassword.equals("a")) {
 						if (!DbStore1.user.isEmpty()) {
 							System.out.println("req are here");
 						}
